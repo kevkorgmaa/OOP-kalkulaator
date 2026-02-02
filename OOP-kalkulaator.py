@@ -1,102 +1,62 @@
-import math
+# Põhiklass User (kasutaja)
+class User():
 
-class Calculator:
-    """Lihtne kalkulaator klass OOP põhimõtetel."""
+    # Konstruktor – käivitatakse objekti loomisel
+    def __init__(self, name, age, gender):
+        self.name = name  # Kasutaja nimi
+        self.age = age  # Kasutaja vanus
+        self.gender = gender  # Kasutaja sugu
 
-    def __init__(self, a, b=None):
-        self.a = a
-        self.b = b
-
-    # ----- Põhifunktsioonid -----
-
-    def liitmine(self):
-        return self.a + self.b
-
-    def lahutamine(self):
-        return self.a - self.b
-
-    def korrutamine(self):
-        return self.a * self.b
-
-    def jagamine(self):
-        if self.b == 0:
-            return "Viga: nulliga jagamine!"
-        return self.a / self.b
-
-    def astendamine(self):
-        return self.a ** self.b
-
-    def ruutjuur(self):
-        if self.a < 0:
-            return "Viga: negatiivi ruutjuurt ei saa võtta!"
-        return math.sqrt(self.a)
-
-    # ----- Lisafunktsioonid (hinne 5 jaoks) -----
-
-    def protsent(self):
-        return (self.a * self.b) / 100
-
-    def absoluut(self):
-        return abs(self.a)
-
-    def keskmine(self):
-        return (self.a + self.b) / 2
+    # Meetod kasutaja andmete kuvamiseks
+    def show_details(self):
+        print("Personal Details")
+        print("")
+        print("Name :", self.name)
+        print("Age :", self.age)
+        print("Gender :", self.gender)
 
 
-# ----- Programm -----
-def menu():
-    print("""
---- KALKULAATOR ---
-1. Liita
-2. Lahutada
-3. Korrutada
-4. Jagada
-5. Astendada
-6. Ruutjuur
-7. Protsent (%)
-8. Absoluutväärtus
-9. Keskmine
-0. Välju
-""")
+# Alamklass Bank, mis pärib User klassi omadused
+class Bank(User):
 
+    # Konstruktor – lisaks kasutaja andmetele luuakse ka konto saldo
+    def __init__(self, name, age, gender):
+        # Kutsutakse välja User klassi konstruktor
+        super().__init__(name, age, gender)
+        self.balance = 0  # Konto algsaldo
 
-while True:
-    menu()
-    valik = input("Vali toiming: ")
+    # Raha sissemakse meetod
+    def deposit(self, amount):
+        self.amount = amount  # Sissemakse summa
+        self.balance = self.balance + amount  # Saldo uuendamine
+        print("Account balance has been updated : €", self.balance)
 
-    if valik == "0":
-        print("Programm lõpetatud.")
-        break
+    # Raha väljavõtmise meetod
+    def withdraw(self, amount):
+        self.amount = amount  # Väljavõetav summa
 
-    # Üks sisend ruutjuure ja absoluutväärtuse jaoks
-    if valik in ["6", "8"]:
-        a = float(input("Sisesta arv: "))
-        calc = Calculator(a)
+        # Kontrollitakse, kas kontol on piisavalt raha
+        if self.amount > self.balance:
+            print("Insufficient Funds | Balance Available : €", self.balance)
+        else:
+            self.balance = self.balance - self.amount
+            print("Account balance has been updated : €", self.balance)
 
-    # Kaks sisendit muudele toimingutele
-    else:
-        a = float(input("Sisesta esimene arv: "))
-        b = float(input("Sisesta teine arv: "))
-        calc = Calculator(a, b)
+    # Meetod kontoinfo ja saldo kuvamiseks
+    def view_balance(self):
+        self.show_details()  # Kuvab kasutaja isikuandmed
+        print("Account balance: €", self.balance)
 
-    # Toimingute töötlemine
-    if valik == "1":
-        print("Vastus:", calc.liitmine())
-    elif valik == "2":
-        print("Vastus:", calc.lahutamine())
-    elif valik == "3":
-        print("Vastus:", calc.korrutamine())
-    elif valik == "4":
-        print("Vastus:", calc.jagamine())
-    elif valik == "5":
-        print("Vastus:", calc.astendamine())
-    elif valik == "6":
-        print("Vastus:", calc.ruutjuur())
-    elif valik == "7":
-        print("Vastus:", calc.protsent())
-    elif valik == "8":
-        print("Vastus:", calc.absoluut())
-    elif valik == "9":
-        print("Vastus:", calc.keskmine())
-    else:
-        print("Vigane valik!")
+    def transfer(self, amount, target_account):
+        # target_account peab olema samuti Bank tüüpi objekt
+        if amount > self.balance:
+            print(f"Transfer failed! Not enough funds. Your balance: €{self.balance}")
+        else:
+            # Vähendame saatja saldot
+            self.balance -= amount
+            # Suurendame saaja saldot
+            target_account.balance += amount
+
+            print(f"Transfer successful!")
+            print(f"You sent €{amount} to {target_account.name}.")
+            print(f"Your new balance: €{self.balance}")
